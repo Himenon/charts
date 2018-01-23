@@ -50,10 +50,6 @@ Links
 
 #### 1-3. helm install redash (this repository)
 
-```bash
-$ git clone https://github.com/Himenon/redash-helm.git && cd ./redash-helm
-```
-
 ```yaml
 # redash-values.yaml
 db:
@@ -66,7 +62,7 @@ service:
 ```
 
 ```
-$ helm install -f redash-values.yaml redash-server .
+$ helm install -f redash-values.yaml himenon/redash
 ```
 
 **Parameter**

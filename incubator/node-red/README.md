@@ -3,7 +3,7 @@
 ## Install the Chart
 
 ```bash
-$ helm install --name my-release .
+$ helm install --name my-release himenon/node-red
 ```
 
 ## Uninstall the Chart

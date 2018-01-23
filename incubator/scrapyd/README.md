@@ -3,7 +3,7 @@
 https://scrapyd.readthedocs.io/en/stable/
 
 ```bash
-helm install scrapyd
+$ helm install --name my-release himenon/scrapyd
 ```
 
 Dockerfile from <https://github.com/vimagick/dockerfiles>

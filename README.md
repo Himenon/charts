@@ -2,9 +2,9 @@
 
 ## TL;DR
 
-```bash
-# $ helm repo add himenon-incubator ...
-# % helm search himenon-incubator ...
+```
+$ helm repo add himenon https://himenon.github.io/incubator/
+$ helm search himenon
 ```
 
 ## PR

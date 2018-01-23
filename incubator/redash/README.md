@@ -1,5 +1,16 @@
 # re:dash helm
 
+## Prepare
+
+
+- re:dash (this repository)
+- redis (<https://github.com/kubernetes/charts/tree/master/stable/redis>)
+- DataBase
+    - GCP SQL Proxy (<https://github.com/kubernetes/charts/tree/master/stable/gcloud-sqlproxy>)
+    - postgres (<https://github.com/kubernetes/charts/tree/master/stable/postgresql>)
+
+Value Sample -> [here](https://gist.github.com/Himenon/33608b18dcdc3c39df1d155f1ffd13eb)
+
 ## Usage
 
 The following two items are explained.
@@ -74,70 +85,30 @@ $ helm install -f redash-values.yaml redash-server .
 
 ### 2. GKE + Persistent Volume (postgres)
 
-- `[pv name]`: Persistent Volume name
-- `[pv size]`: Persitent Volume size
-- `[storage class]`: Storage Class Name 
-
-#### 2-1. Make Persistent Volum on GCE
+#### 2-1. helm install postgres
 
 ```bash
-$ gcloud compute disks create [pv name] --size=[pv size] --type pd-standard
-```
-
-#### 2-2. Manage PV with kubernetes
-
-```yaml
-# pv.yaml
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: psql-pv
-  annotations:
-    pv.beta.kubernetes.io/gid: "0"
-spec:
-  capacity:
-    storage: [pv size]Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Recycle
-  storageClassName: [storage class]
-  gcePersistentDisk:
-    pdName: [pv name]
-    fsType: ext4
-```
-
-```bash
-$ kubectl apply -f pv.yaml
-```
-
-Links
-
-- https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistent-volumes
-
-#### 2-3. helm install postgres
-
-```yaml
-# psql-values.yaml
-imageTag: "9.5.6-alpine"
-persistence:
-  enabled: true
-  storageClass: [storage class]
-service:
-  type: ClusterIP
-  port: 5432
-```
-
-```bash
-$ helm install -f psql-values.yaml --name redash-db stable/postgresql
+$ helm install --name redash-db stable/postgresql
 ```
 
 Links
 
 - https://github.com/kubernetes/charts/tree/master/stable/postgresql
 
-#### 2-4. helm install redash (this repository)
+#### 2-2. helm install redash (this repository)
 
 Same: 1-3
+
+### 3 Redis Server
+
+Links
+
+- https://github.com/kubernetes/charts/tree/master/stable/redis
+
+```
+$ helm install --name redash-redis stable/redis
+```
+
 
 # Author
 
@@ -148,6 +119,3 @@ Same: 1-3
 
 - networkpolicy
 - NOTES
-
-
-

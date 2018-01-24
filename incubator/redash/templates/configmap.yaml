@@ -36,6 +36,10 @@ data:
   REDASH_MAIL_PASSWORD: {{ .Values.redashEmail.password | quote }}
   REDASH_MAIL_DEFAULT_SENDER: {{ .Values.redashEmail.defaultSender| quote }}
   REDASH_HOST: {{ .Values.redashEmail.host | quote }}
+  REDASH_CELERY_TIMEZONE: {{ .Values.timezone | quote }}
+  {{- if .Values.extention.python.enabled }}
+  REDASH_ADDITIONAL_QUERY_RUNNERS: redash.query_runner.python
+  {{- end }}
   TZ: {{ .Values.timezone | quote }}
 
 ---

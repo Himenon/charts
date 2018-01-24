@@ -1,0 +1,28 @@
+{{- if .Values.broker.enabled }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "redash.name" . }}-{{ .Values.broker.deployment.name }}
+  labels:
+    app: {{ template "redash.name" . }}-{{ .Values.broker.deployment.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  template:
+    metadata:
+      labels:
+        io.redash.service: {{ .Release.Name }}-{{ .Values.broker.deployment.name }}-redash
+        app: {{ template "redash.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ template "redash.fullname" . }}
+        image: "{{ .Values.broker.deployment.image.repository }}:{{ .Values.broker.deployment.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.broker.service.internalPort }}
+          protocol: TCP
+          name: broker
+        resources:
+{{ toYaml .Values.broker.deployment.resources | indent 12 }}
+{{- end }}

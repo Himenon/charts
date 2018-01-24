@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "redash.fullname" . }}-{{ .Values.broker.service.name }}
+  labels:
+    app: {{ template "redash.name" . }}-{{ .Values.broker.deployment.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.broker.service.type }}
+  ports:
+  - name: {{ .Release.Name }}-redash-{{ .Values.broker.service.name }}
+    port: {{ .Values.broker.service.externalPort }}
+    targetPort: {{ .Values.broker.service.internalPort }}
+  selector:
+    io.redash.service: {{ .Release.Name }}-{{ .Values.broker.deployment.name }}-redash
+    app: {{ template "redash.name" . }}
+    release: {{ .Release.Name }}

@@ -1,0 +1,21 @@
+{{- if .Values.flower.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "redash.fullname" . }}-{{ .Values.flower.service.name }}
+  labels:
+    app: {{ template "redash.name" . }}-{{ .Values.flower.deployment.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.flower.service.type }}
+  ports:
+  - name: {{ .Release.Name }}-redash-{{ .Values.flower.service.name }}
+    port: {{ .Values.flower.service.externalPort }}
+    targetPort: {{ .Values.flower.service.internalPort }}
+  selector:
+    io.redash.service: {{ .Release.Name }}-{{ .Values.flower.deployment.name }}-redash
+    app: {{ template "redash.name" . }}
+    release: {{ .Release.Name }}
+{{- end }}

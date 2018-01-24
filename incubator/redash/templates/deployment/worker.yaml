@@ -8,7 +8,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.broker.deployment.replicas }}
   template:
     metadata:
       labels:
@@ -19,7 +19,7 @@ spec:
       containers:
         - name: worker
           image: "{{ .Values.worker.deployment.image.repository }}:{{ .Values.worker.deployment.image.tag }}"
-          args: ["scheduler"]
+          args: ["worker"]
           env:
           - name: REDASH_DATABASE_URL
             valueFrom:

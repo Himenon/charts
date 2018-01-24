@@ -3,12 +3,12 @@ kind: Deployment
 metadata:
   name: {{ template "redash.name" . }}-{{ .Values.server.deployment.name }}
   labels:
-    app: {{ template "redash.name" . }}
+    app: {{ template "redash.name" . }}-{{ .Values.server.deployment.name }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.server.deployment.replicas }}
   template:
     metadata:
       labels:
@@ -25,7 +25,7 @@ spec:
           image: "{{ .Values.server.deployment.image.repository }}:{{ .Values.server.deployment.image.tag }}"
           args: ["server"]
           ports:
-          - containerPort: {{ .Values.service.internalPort }}
+          - containerPort: {{ .Values.server.service.internalPort }}
             protocol: TCP
           env:
           - name: REDASH_DATABASE_URL

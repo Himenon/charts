@@ -4,11 +4,8 @@ db:
   pass: redash
   host: redash-db-postgresql
 
-service:
-  type: LoadBalancer
-  loadBalancerIP: ""
-  externalPort: 80
-  internalPort: 5000
+timezone: "Asia/Tokyo"
+
 ingress:
   enabled: false
   # Used to create an Ingress record.
@@ -44,13 +41,18 @@ redashEmail:
   host: ""
 
 server:
+  service:
+    name: server
+    type: LoadBalancer
+    loadBalancerIP: ""
+    externalPort: 80
+    internalPort: 5000
   deployment:
     name: server
     image:
       repository: redash/redash
       tag: latest
       pullPolicy: IfNotPresent
-    ImagePullPolcy:
     replicas: 1
     annotations:
     nodeSelector: {}
@@ -65,7 +67,6 @@ worker:
       repository: redash/redash
       tag: latest
       pullPolicy: IfNotPresent
-    ImagePullPolcy:
     replicas: 1
     annotations:
     nodeSelector: {}
@@ -73,3 +74,40 @@ worker:
   configMap:
     queue: "queries,scheduled_queries,celery"
     workerCount: "2"
+
+broker:
+  enabled: true
+  service:
+    name: broker
+    type: ClusterIP
+    externalPort: 6379
+    internalPort: 6379
+  deployment:
+    name: broker
+    image:
+      repository: redis
+      tag: 3.0-alpine
+      pullPolicy: IfNotPresent
+    replicas: 1
+    nodeSelector: {}
+    resource: {}
+
+
+flower:
+  enabled: false
+  service:
+    name: flower
+    type: LoadBalancer
+    externalPort: 80
+    internalPort: 5555
+  deployment:
+    name: flower
+    image:
+      repository: crgwbr/docker-celery-flower
+      tag: latest
+      pullPolicy: IfNotPresent
+    replicas: 1
+    nodeSelector: {}
+    resource: {}
+  configMap:
+    celeryBrokerUrl: redis://redash-broker-redis:6379/0

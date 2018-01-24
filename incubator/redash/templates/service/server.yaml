@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "redash.fullname" . }}-{{ .Values.server.service.name }}
+  labels:
+    app: {{ template "redash.name" . }}-{{ .Values.server.deployment.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.server.service.type }}
+  ports:
+  - name: {{ .Release.Name }}-redash-{{ .Values.server.service.name }}
+    port: {{ .Values.server.service.externalPort }}
+    targetPort: {{ .Values.server.service.internalPort }}
+  selector:
+    io.redash.service: {{ .Release.Name }}-{{ .Values.server.deployment.name }}-redash
+    app: {{ template "redash.name" . }}
+    release: {{ .Release.Name }}
+  {{- if .Values.server.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.server.service.loadBalancerIP }}
+  {{- end }}

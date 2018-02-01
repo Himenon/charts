@@ -1,10 +1,10 @@
-{{- if .Values.configurationFiles }}
+{{- if .Values.configmap }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "node-red.fullname" . }}
+  name: {{ template "node-red.fullname" . }}-configmap
 data:
-{{- range $key, $val := .Values.configurationFiles }}
+{{- range $key, $val := .Values.configmap }}
   {{ $key }}: |-
 {{ $val | indent 4}}
 {{- end }}

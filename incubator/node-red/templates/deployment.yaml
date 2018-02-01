@@ -23,7 +23,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef:
-              name: {{ template "node-red.fullname" . }}-configmap
+                name: {{ template "node-red.fullname" . }}-configmap
           ports:
             - containerPort: {{ .Values.service.internalPort }}
           volumeMounts:

@@ -6,6 +6,10 @@ db:
 
 timezone: "Asia/Tokyo"
 
+extention:
+    python:
+      enabled: false
+
 ingress:
   enabled: false
   # Used to create an Ingress record.

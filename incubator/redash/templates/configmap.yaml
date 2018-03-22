@@ -23,24 +23,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-redash-common-configmap
 data:
-  REDASH_LOG_LEVEL: {{ .Values.common.configMap.redashLogLevel | quote }}
-  REDASH_REDIS_URL: {{ .Values.common.configMap.redashRedisUrl | quote }}
-  REDASH_GOOGLE_CLIENT_ID: {{ .Values.oauth.google.clientId | quote }}
-  REDASH_GOOGLE_CLIENT_SECRET: {{ .Values.oauth.google.secret | quote }}
-  REDASH_GOOGLE_APPS_DOMAIN: {{ .Values.oauth.google.appsDomain | quote }}
-  REDASH_MAIL_SERVER: {{ .Values.redashEmail.server | quote }}
-  REDASH_MAIL_PORT: {{ .Values.redashEmail.port | quote }}
-  REDASH_MAIL_USE_TLS: {{ .Values.redashEmail.useTLS | quote }}
-  REDASH_MAIL_USE_SSL: {{ .Values.redashEmail.useSSL | quote }}
-  REDASH_MAIL_USERNAME: {{ .Values.redashEmail.username | quote }}
-  REDASH_MAIL_PASSWORD: {{ .Values.redashEmail.password | quote }}
-  REDASH_MAIL_DEFAULT_SENDER: {{ .Values.redashEmail.defaultSender| quote }}
-  REDASH_HOST: {{ .Values.redashEmail.host | quote }}
-  REDASH_CELERY_TIMEZONE: {{ .Values.timezone | quote }}
-  {{- if .Values.extention.python.enabled }}
-  REDASH_ADDITIONAL_QUERY_RUNNERS: redash.query_runner.python
-  {{- end }}
-  TZ: {{ .Values.timezone | quote }}
+{{ toYaml .Values.common.configMap | indent 2 }}
 
 ---
 

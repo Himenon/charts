@@ -1,3 +1,5 @@
-Install Done
+Congraturaion Installed redash!
 
-{{ .Release.Name }}
+Chart Name: {{ .Release.Name }}
+
+

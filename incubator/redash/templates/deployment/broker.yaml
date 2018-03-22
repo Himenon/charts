@@ -23,6 +23,9 @@ spec:
         - containerPort: {{ .Values.broker.service.internalPort }}
           protocol: TCP
           name: broker
+        env:
+        - name: REDASH_REDIS_URL
+          value: "redis://{{ .Release.Name }}-{{ template "redash.name" . }}-{{ .Values.broker.deployment.name }}:6379/0"
         resources:
 {{ toYaml .Values.broker.deployment.resources | indent 12 }}
 {{- end }}

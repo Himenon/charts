@@ -21,24 +21,21 @@ ingress:
     #     - chart-example.local
 common:
   configMap:
-    redashLogLevel: "INFO"
-    redashRedisUrl: "redis://redash-broker-redis:6379/0"
-
-oauth:
-  google:
-    clientId: ""
-    secret: ""
-    appsDomain: ""
-
-redashEmail:
-  server: localhost
-  port: 25
-  useTLS: False
-  useSSL: false
-  username: ""
-  password: ""
-  defaultSender: ""
-  host: ""
+    REDASH_LOG_LEVEL: "INFO"
+    REDASH_GOOGLE_CLIENT_ID: ""
+    REDASH_GOOGLE_CLIENT_SECRET: ""
+    REDASH_GOOGLE_APPS_DOMAIN: ""
+    REDASH_MAIL_SERVER: "localhost"
+    REDASH_MAIL_PORT: "25"
+    REDASH_MAIL_USE_TLS: "False"
+    REDASH_MAIL_USE_SSL: "False"
+    REDASH_MAIL_USERNAME: "" 
+    REDASH_MAIL_PASSWORD: ""
+    REDASH_MAIL_DEFAULT_SENDER: ""
+    REDASH_HOST: ""
+    REDASH_CELERY_TIMEZONE: "UTC"
+    TZ: "UTC"
+    REDASH_ADDITIONAL_QUERY_RUNNERS: "redash.query_runner.python"
 
 server:
   service:

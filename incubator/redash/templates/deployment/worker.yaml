@@ -19,7 +19,7 @@ spec:
       containers:
         - name: worker
           image: "{{ .Values.worker.deployment.image.repository }}:{{ .Values.worker.deployment.image.tag }}"
-          args: ["worker"]
+          args: ["scheduler"]
           env:
           - name: REDASH_DATABASE_URL
             valueFrom:
@@ -31,6 +31,9 @@ spec:
               name: {{ .Release.Name }}-redash-worker-configmap
           - configMapRef:
               name: {{ .Release.Name }}-redash-common-configmap
+          env:
+          - name: REDASH_REDIS_URL
+            value: "redis://{{ .Release.Name }}-{{ template "redash.name" . }}-{{ .Values.broker.deployment.name }}:6379/0"
           resources:
 {{ toYaml .Values.worker.deployment.resources | indent 12 }}
     {{- if .Values.nodeSelector }}

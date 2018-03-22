@@ -38,6 +38,9 @@ spec:
               name: {{ .Release.Name }}-redash-server-configmap
           - configMapRef:
               name: {{ .Release.Name }}-redash-common-configmap
+          env:
+          - name: REDASH_REDIS_URL
+            value: "redis://{{ .Release.Name }}-{{ template "redash.name" . }}-{{ .Values.broker.deployment.name }}:6379/0"
           resources:
 {{ toYaml .Values.server.deployment.resources | indent 12 }}
     {{- if .Values.nodeSelector }}

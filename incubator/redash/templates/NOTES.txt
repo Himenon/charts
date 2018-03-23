@@ -1,5 +1,3 @@
 Congraturaion Installed redash!
 
 Chart Name: {{ .Release.Name }}
-
-

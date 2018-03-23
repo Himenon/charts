@@ -16,10 +16,6 @@ spec:
         app: {{ template "redash.name" . }}
         release: {{ .Release.Name }}
     spec:
-#      initContainers:
-#        - name: create-db
-#          image: "{{ .Values.server.deployment.image.repository }}:{{ .Values.server.deployment.image.tag }}"
-#          args: ["create_db"]
       containers:
         - name: server
           image: "{{ .Values.server.deployment.image.repository }}:{{ .Values.server.deployment.image.tag }}"
@@ -33,14 +29,13 @@ spec:
               secretKeyRef:
                 name: {{ template "redash.fullname" . }}
                 key: REDASH_DATABASE_URL
+          - name: REDASH_REDIS_URL
+            value: "redis://{{ .Release.Name }}-{{ template "redash.name" . }}-{{ .Values.broker.deployment.name }}:6379/0"
           envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-redash-server-configmap
           - configMapRef:
               name: {{ .Release.Name }}-redash-common-configmap
-          env:
-          - name: REDASH_REDIS_URL
-            value: "redis://{{ .Release.Name }}-{{ template "redash.name" . }}-{{ .Values.broker.deployment.name }}:6379/0"
           resources:
 {{ toYaml .Values.server.deployment.resources | indent 12 }}
     {{- if .Values.nodeSelector }}

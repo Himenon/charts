@@ -16,5 +16,10 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{- define "redash.databaseurl" -}}
-{{- printf "postgresql://%s:%s@%s/%s" .Values.db.user .Values.db.pass .Values.db.host .Values.db.name | b64enc | quote -}}
+{{- if .Values.db.containerEnabled -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- printf "postgresql://%s:%s@%s-%s-%s:%s/%s" .Values.db.meta.user .Values.db.meta.pass .Release.Name $name .Values.db.service.name .Values.db.meta.port .Values.db.meta.name | b64enc | quote -}}
+{{- else -}}
+{{- printf "postgresql://%s:%s@%s:%s/%s" .Values.db.meta.user .Values.db.meta.pass .Values.db.meta.host .Values.db.meta.port .Values.db.meta.name | b64enc | quote -}}
+{{- end -}}
 {{- end -}}

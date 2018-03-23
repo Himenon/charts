@@ -21,6 +21,9 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "node-red.fullname" . }}-configmap
           ports:
             - containerPort: {{ .Values.service.internalPort }}
           volumeMounts:
@@ -29,14 +32,6 @@ spec:
             {{- if .Values.persistence.subPath }}
             subPath: {{ .Values.persistence.subPath }}
             {{- end }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.service.internalPort }}
-          readinessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.service.internalPort }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- if .Values.nodeSelector }}

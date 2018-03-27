@@ -37,6 +37,7 @@ resources: {}
   # requests:
   #  cpu: 100m
   #  memory: 128Mi
+configmap: {}
 persistence:
   # If already exists persistent volume.
   # storageClass: ""

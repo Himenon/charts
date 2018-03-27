@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "node-red.fullname" . }}-configmap
+  name: {{ template "scrapyd.fullname" . }}-configmap
 data:
 {{- range $key, $val := .Values.configmap }}
   {{ $key }}: |-

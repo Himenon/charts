@@ -1,20 +1,14 @@
-db:
-  name: redash
-  user: redash
-  pass: redash
-  host: redash-db-postgresql
-
 timezone: "Asia/Tokyo"
 
 extention:
-    python:
-      enabled: false
+  python:
+    enabled: false
 
 ingress:
   enabled: false
   # Used to create an Ingress record.
   hosts:
-    - chart-example.local
+    - chart-example.local!
   annotations:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
@@ -25,59 +19,57 @@ ingress:
     #     - chart-example.local
 common:
   configMap:
-    redashLogLevel: "INFO"
-    redashRedisUrl: "redis://redash-broker-redis:6379/0"
+    REDASH_LOG_LEVEL: "INFO"
+    # REDASH_GOOGLE_CLIENT_ID: ""
+    # REDASH_GOOGLE_CLIENT_SECRET: ""
+    # REDASH_GOOGLE_APPS_DOMAIN: ""
+    REDASH_MAIL_SERVER: "localhost"
+    REDASH_MAIL_PORT: "25"
+    # REDASH_MAIL_USE_TLS: "False"
+    # REDASH_MAIL_USE_SSL: "False"
+    # REDASH_MAIL_USERNAME:
+    # REDASH_MAIL_PASSWORD:
+    # REDASH_MAIL_DEFAULT_SENDER:
+    # REDASH_HOST:
+    REDASH_CELERY_TIMEZONE: "Asia/Tokyo"
+    TZ: "Asia/Tokyo"
+    REDASH_ADDITIONAL_QUERY_RUNNERS: "redash.query_runner.python"
 
-oauth:
-  google:
-    clientId: ""
-    secret: ""
-    appsDomain: ""
-
-redashEmail:
-  server: localhost
-  port: 25
-  useTLS: False
-  useSSL: false
-  username: ""
-  password: ""
-  defaultSender: ""
-  host: ""
+base:
+  deployment:
+    image:
+      repository: redash/redash
+      tag: latest
+      pullPolicy: IfNotPresent
 
 server:
   service:
     name: server
     type: LoadBalancer
     loadBalancerIP: ""
-    externalPort: 80
+    externalPort: 8088
     internalPort: 5000
-  deployment:
-    name: server
-    image:
-      repository: redash/redash
-      tag: latest
-      pullPolicy: IfNotPresent
-    replicas: 1
-    annotations:
-    nodeSelector: {}
-    resource: {}
   configMap:
     redashWebWorkers: "4"
+  replicas: 1
+  annotations: {}
+  nodeSelector: {}
+  resource: {}
 
 worker:
-  deployment:
-    name: worker
-    image:
-      repository: redash/redash
-      tag: latest
-      pullPolicy: IfNotPresent
-    replicas: 1
-    annotations:
-    nodeSelector: {}
-    resource: {}
   configMap:
     queue: "queries,scheduled_queries,celery"
     workerCount: "2"
+  replicas: 1
+  annotations: {}
+  nodeSelector: {}
+  resource: {}
+
+scheduler:
+  replicas: 1
+  annotations: {}
+  nodeSelector: {}
+  resource: {}
 
 broker:
   enabled: true
@@ -96,6 +88,38 @@ broker:
     nodeSelector: {}
     resource: {}
 
+db:
+  # FIXME: postgreSQL動かない
+  containerEnabled: false
+  meta:
+    name: "postgres"
+    user: "postgres"
+    pass: "postgres"
+    host: "redash-postgresql"
+    port: "5432"
+  persistence:
+    enabled: true
+    mountPath: /var/lib/postgresql/data/pgdata
+    subPath: "postgresql-db"
+    size: 8Gi
+    accessMode: ReadWriteOnce
+    # annotations: {}
+    # storageClass: "-"
+    # existingClaim:
+  service:
+    name: database
+    type: LoadBalancer
+    externalPort: 5432
+    internalPort: 5432
+  deployment:
+    name: database
+    image:
+      repository: postgres
+      tag: 9.5.6-alpine
+      pullPolicy: IfNotPresent
+    replicas: 1
+    nodeSelector: {}
+    resource: {}
 
 flower:
   enabled: false

@@ -1,0 +1,64 @@
+{{- if .Values.db.containerEnabled }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "redash.name" . }}-{{ .Values.db.deployment.name }}
+  labels:
+    app: {{ template "redash.name" . }}-{{ .Values.db.deployment.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  template:
+    metadata:
+      labels:
+        io.redash.service: {{ .Release.Name }}-{{ .Values.db.deployment.name }}-redash
+        app: {{ template "redash.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ template "redash.fullname" . }}
+        image: "{{ .Values.db.deployment.image.repository }}:{{ .Values.db.deployment.image.tag }}"
+        command: 
+        - postgres
+        - -c
+        - fsync=off
+        - -c
+        - full_page_writes=off
+        - -c
+        - synchronous_commit=OFF
+        ports:
+        - containerPort: {{ .Values.db.service.internalPort }}
+          name: db
+        env:
+        - name: POSTGRES_USER
+          value: {{ default "postgres" .Values.db.meta.user | quote }}
+          # Required for pg_isready in the health probes.
+        - name: PGUSER
+          value: {{ default "postgres" .Values.db.meta.user | quote }}
+        - name: POSTGRES_DB
+          value: {{ default "" .Values.db.meta.name | quote }}
+        # - name: POSTGRES_INITDB_ARGS
+        #   value: {{ default "" .Values.postgresInitdbArgs | quote }}
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "redash.fullname" . }}-db
+              key: postgres-password
+        resources:
+{{ toYaml .Values.db.deployment.resources | indent 12 }}
+        volumeMounts:
+        - name: data
+          mountPath: {{ .Values.db.persistence.mountPath }}
+          subPath: {{ .Values.db.persistence.subPath }}
+      volumes:
+      - name: data
+      {{- if .Values.db.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.db.persistence.existingClaim | default (include "redash.fullname" .) }}
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+{{- end }}

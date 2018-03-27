@@ -1,0 +1,25 @@
+{{- if .Values.db.containerEnabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "redash.fullname" . }}-{{ .Values.db.service.name }}
+  labels:
+    app: {{ template "redash.name" . }}-{{ .Values.db.deployment.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.db.service.type }}
+  ports:
+  - name: {{ .Release.Name }}-redash-{{ .Values.db.service.name }}
+    port: {{ .Values.db.service.externalPort }}
+    targetPort: {{ .Values.db.service.internalPort }}
+  selector:
+    app: {{ template "redash.name" . }}-{{ .Values.db.deployment.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  {{- if .Values.db.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.db.service.loadBalancerIP }}
+  {{- end }}
+{{- end }}

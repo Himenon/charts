@@ -1,8 +1,8 @@
 timezone: "Asia/Tokyo"
 
 extention:
-    python:
-      enabled: false
+  python:
+    enabled: false
 
 ingress:
   enabled: false

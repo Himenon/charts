@@ -27,9 +27,16 @@ common:
     # REDASH_MAIL_PASSWORD:
     # REDASH_MAIL_DEFAULT_SENDER:
     # REDASH_HOST:
-    REDASH_CELERY_TIMEZONE: "JST"
-    TZ: "JST"
+    REDASH_CELERY_TIMEZONE: "Asia/Tokyo"
+    TZ: "Asia/Tokyo"
     REDASH_ADDITIONAL_QUERY_RUNNERS: "redash.query_runner.python"
+
+base:
+  deployment:
+    image:
+      repository: redash/redash
+      tag: latest
+      pullPolicy: IfNotPresent
 
 server:
   service:
@@ -38,33 +45,27 @@ server:
     loadBalancerIP: ""
     externalPort: 8088
     internalPort: 5000
-  deployment:
-    name: server
-    image:
-      repository: redash/redash
-      tag: latest
-      pullPolicy: IfNotPresent
-    replicas: 1
-    annotations:
-    nodeSelector: {}
-    resource: {}
   configMap:
     redashWebWorkers: "4"
+  replicas: 1
+  annotations: {}
+  nodeSelector: {}
+  resource: {}
 
 worker:
-  deployment:
-    name: worker
-    image:
-      repository: redash/redash
-      tag: latest
-      pullPolicy: IfNotPresent
-    replicas: 1
-    # annotations:
-    nodeSelector: {}
-    resource: {}
   configMap:
     queue: "queries,scheduled_queries,celery"
     workerCount: "2"
+  replicas: 1
+  annotations: {}
+  nodeSelector: {}
+  resource: {}
+
+scheduler:
+  replicas: 1
+  annotations: {}
+  nodeSelector: {}
+  resource: {}
 
 broker:
   enabled: true
@@ -84,12 +85,13 @@ broker:
     resource: {}
 
 db:
-  containerEnabled: true
+  # FIXME: postgreSQL動かない
+  containerEnabled: false
   meta:
     name: "postgres"
     user: "postgres"
     pass: "postgres"
-    host: "redash-db-postgresql"
+    host: "redash-postgresql"
     port: "5432"
   persistence:
     enabled: true

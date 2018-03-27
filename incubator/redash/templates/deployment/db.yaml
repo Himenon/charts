@@ -19,9 +19,16 @@ spec:
       containers:
       - name: {{ template "redash.fullname" . }}
         image: "{{ .Values.db.deployment.image.repository }}:{{ .Values.db.deployment.image.tag }}"
+        command: 
+        - postgres
+        - -c
+        - fsync=off
+        - -c
+        - full_page_writes=off
+        - -c
+        - synchronous_commit=OFF
         ports:
         - containerPort: {{ .Values.db.service.internalPort }}
-          protocol: TCP
           name: db
         env:
         - name: POSTGRES_USER

@@ -1,25 +1,25 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "redash.name" . }}-{{ .Values.worker.deployment.name }}
+  name: {{ template "redash.name" . }}-redash-worker
   labels:
-    app: {{ template "redash.name" . }}
+    app: {{ template "redash.name" . }}-worker
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.broker.deployment.replicas }}
+  replicas: {{ .Values.worker.replicas }}
   template:
     metadata:
       labels:
-        io.redash.service: {{ .Release.Name }}-{{ .Values.worker.deployment.name }}-redash
+        io.redash.service: {{ .Release.Name }}-redash-worker
         app: {{ template "redash.name" . }}
         release: {{ .Release.Name }}
     spec:
       containers:
         - name: worker
-          image: "{{ .Values.worker.deployment.image.repository }}:{{ .Values.worker.deployment.image.tag }}"
-          args: ["scheduler"]
+          image: "{{ .Values.base.deployment.image.repository }}:{{ .Values.base.deployment.image.tag }}"
+          args: ["worker"]
           env:
           - name: REDASH_DATABASE_URL
             valueFrom:
@@ -34,8 +34,8 @@ spec:
           - configMapRef:
               name: {{ .Release.Name }}-redash-common-configmap
           resources:
-{{ toYaml .Values.worker.deployment.resources | indent 12 }}
+{{ toYaml .Values.worker.resources | indent 12 }}
     {{- if .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.worker.deployment.nodeSelector | indent 8 }}
+{{ toYaml .Values.worker.nodeSelector | indent 8 }}
     {{- end }}

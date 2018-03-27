@@ -1,28 +1,25 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "redash.name" . }}-redash-server
+  name: {{ template "redash.name" . }}-redash-scheduler
   labels:
-    app: {{ template "redash.name" . }}-server
+    app: {{ template "redash.name" . }}-scheduler
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.server.replicas }}
+  replicas: {{ .Values.scheduler.replicas }}
   template:
     metadata:
       labels:
-        io.redash.service: {{ .Release.Name }}-redash-server
+        io.redash.service: {{ .Release.Name }}-redash-scheduler
         app: {{ template "redash.name" . }}
         release: {{ .Release.Name }}
     spec:
       containers:
-        - name: server
+        - name: scheduler
           image: "{{ .Values.base.deployment.image.repository }}:{{ .Values.base.deployment.image.tag }}"
-          args: ["server"]
-          ports:
-          - containerPort: {{ .Values.server.service.internalPort }}
-            protocol: TCP
+          args: ["scheduler"]
           env:
           - name: REDASH_DATABASE_URL
             valueFrom:
@@ -33,12 +30,10 @@ spec:
             value: "redis://{{ .Release.Name }}-{{ template "redash.name" . }}-{{ .Values.broker.deployment.name }}:6379/0"
           envFrom:
           - configMapRef:
-              name: {{ .Release.Name }}-redash-server-configmap
-          - configMapRef:
               name: {{ .Release.Name }}-redash-common-configmap
           resources:
-{{ toYaml .Values.server.resources | indent 12 }}
+{{ toYaml .Values.scheduler.resources | indent 12 }}
     {{- if .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.server.nodeSelector | indent 8 }}
+{{ toYaml .Values.scheduler.nodeSelector | indent 8 }}
     {{- end }}

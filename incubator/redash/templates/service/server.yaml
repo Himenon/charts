@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ template "redash.fullname" . }}-{{ .Values.server.service.name }}
   labels:
-    app: {{ template "redash.name" . }}-{{ .Values.server.deployment.name }}
+    app: {{ template "redash.name" . }}-redash-server
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -14,7 +14,7 @@ spec:
     port: {{ .Values.server.service.externalPort }}
     targetPort: {{ .Values.server.service.internalPort }}
   selector:
-    io.redash.service: {{ .Release.Name }}-{{ .Values.server.deployment.name }}-redash
+    io.redash.service: {{ .Release.Name }}-redash-server
     app: {{ template "redash.name" . }}
     release: {{ .Release.Name }}
   {{- if .Values.server.service.loadBalancerIP }}

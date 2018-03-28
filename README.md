@@ -11,6 +11,13 @@ $ helm search himenon
 
 Any PR Welcome !
 
+## Build
+
+```
+$ git clone git@github.com:Himenon/incubator.git pkg
+$ ./build.sh
+```
+
 # Author
 
 - [K.Himeno](https://github.com/Himenon)
